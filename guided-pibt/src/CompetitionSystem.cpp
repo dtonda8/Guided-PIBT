@@ -236,10 +236,6 @@ void BaseSystem::simulate(int simulation_time){
             }
     }
 
-    for (int a = 0; a < num_of_agents; a++) {
-        std::cout << paths[a] << std::endl;
-    }
-
     cout << std::endl << "Done!" << std::endl;
 }
 
@@ -280,6 +276,14 @@ void BaseSystem::initialize() {
         {
             solution_costs[a] = 0;
         }
+}
+
+std::vector<Path> BaseSystem::getPaths() {
+    return paths;
+}
+
+vector<int> BaseSystem::getSolutionCosts() {
+    return solution_costs;
 }
 
 void BaseSystem::savePaths(const string &fileName, int option) const

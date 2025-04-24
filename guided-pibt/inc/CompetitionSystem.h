@@ -20,9 +20,9 @@ public:
 	virtual ~BaseSystem(){
 
         //safely exit: wait for join the thread then delete planner and exit
-        if (started){
-            task_td.join();
-        }
+        // if (started){
+        //     task_td.join();
+        // }
         if (planner != nullptr){
             delete planner;
         }
@@ -32,6 +32,9 @@ public:
 
     std::string action2symbol(int action) const;
 
+    std::vector<Path> getPaths();
+    
+    vector<int> getSolutionCosts();
 
     void savePaths(const string &fileName, int option) const; //option = 0: save actual movement, option = 1: save planner movement
     //void saveSimulationIssues(const string &fileName) const;
@@ -55,7 +58,7 @@ protected:
     Grid map;
 
     std::future<std::vector<Action>> future;
-    std::thread task_td;
+    // std::thread task_td;
     bool started = false;
 
     MAPFPlanner* planner;

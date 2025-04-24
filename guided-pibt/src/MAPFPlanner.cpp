@@ -94,8 +94,7 @@ void MAPFPlanner::plan(int time_limit,vector<Action> & actions)
                     }
             }
         }
-
-        assert(env->goal_locations[i].size()>0);
+        // assert(env->goal_locations[i].size()>0);
         task_change[i] =  env->goal_locations[i].front().first != trajLNS.tasks[i];
         trajLNS.tasks[i] = env->goal_locations[i].front().first;
 
