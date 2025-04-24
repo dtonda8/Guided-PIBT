@@ -75,54 +75,74 @@ vector<Action> BaseSystem::plan_wrapper(){
     return actions;
 }
 
-vector<Action> BaseSystem::plan(){
-    using namespace std::placeholders;
-    if (started && future.wait_for(std::chrono::seconds(0)) != std::future_status::ready){
-        std::cout<<started<<"     "<<(future.wait_for(std::chrono::seconds(0)) != std::future_status::ready)<<std::endl;
-        if(logger){
+// vector<Action> BaseSystem::plan(){
+//     using namespace std::placeholders;
+//     if (started && future.wait_for(std::chrono::seconds(0)) != std::future_status::ready){
+//         std::cout<<started<<"     "<<(future.wait_for(std::chrono::seconds(0)) != std::future_status::ready)<<std::endl;
+//         if(logger){
+//             logger->log_info("planner cannot run because the previous run is still running", timestep);
+//         }
+
+//         if (future.wait_for(std::chrono::seconds(plan_time_limit)) == std::future_status::ready){
+//             task_td.join();
+//             started = false;
+//             return future.get();
+//         }
+//         logger->log_info("planner timeout", timestep);
+//         return {};
+//     }
+
+//     std::packaged_task<std::vector<Action>()> task(std::bind(&BaseSystem::plan_wrapper, this));
+//     future = task.get_future();
+//     if (task_td.joinable()){
+//         task_td.join();
+//     }
+//     task_td = std::thread(std::move(task));
+//     started = true;
+//     if (future.wait_for(std::chrono::seconds(plan_time_limit)) == std::future_status::ready){
+//         task_td.join();
+//         started = false;
+//         return future.get();
+//     }
+//     logger->log_info("planner timeout", timestep);
+//     this->has_timeout = true;
+//     return {};
+// }
+
+// bool BaseSystem::planner_initialize(){
+//     using namespace std::placeholders;
+//     std::packaged_task<void(int)> init_task(std::bind(&MAPFPlanner::initialize, planner, _1));
+//     auto init_future = init_task.get_future();
+    
+//     auto init_td = std::thread(std::move(init_task), preprocess_time_limit);
+//     if (init_future.wait_for(std::chrono::seconds(preprocess_time_limit)) == std::future_status::ready){
+//         init_td.join();
+//         return true;
+  
+//     }
+
+//     init_td.detach();
+//     return false;
+// }
+
+std::vector<Action> BaseSystem::plan() {
+    if (started) {
+        if (logger) {
             logger->log_info("planner cannot run because the previous run is still running", timestep);
         }
-
-        if (future.wait_for(std::chrono::seconds(plan_time_limit)) == std::future_status::ready){
-            task_td.join();
-            started = false;
-            return future.get();
-        }
-        logger->log_info("planner timeout", timestep);
         return {};
     }
 
-    std::packaged_task<std::vector<Action>()> task(std::bind(&BaseSystem::plan_wrapper, this));
-    future = task.get_future();
-    if (task_td.joinable()){
-        task_td.join();
-    }
-    task_td = std::thread(std::move(task));
     started = true;
-    if (future.wait_for(std::chrono::seconds(plan_time_limit)) == std::future_status::ready){
-        task_td.join();
-        started = false;
-        return future.get();
-    }
-    logger->log_info("planner timeout", timestep);
-    this->has_timeout = true;
-    return {};
+    auto result = this->plan_wrapper();  // Blocking call
+    started = false;
+    return result;
 }
 
-bool BaseSystem::planner_initialize(){
-    using namespace std::placeholders;
-    std::packaged_task<void(int)> init_task(std::bind(&MAPFPlanner::initialize, planner, _1));
-    auto init_future = init_task.get_future();
-    
-    auto init_td = std::thread(std::move(init_task), preprocess_time_limit);
-    if (init_future.wait_for(std::chrono::seconds(preprocess_time_limit)) == std::future_status::ready){
-        init_td.join();
-        return true;
-  
-    }
-
-    init_td.detach();
-    return false;
+bool BaseSystem::planner_initialize() {
+    // Just call initialize directly
+    planner->initialize(preprocess_time_limit);
+    return true;  // Always returns true because it's blocking
 }
 
 void BaseSystem::log_preprocessing(bool succ){
@@ -214,6 +234,10 @@ void BaseSystem::simulate(int simulation_time){
                 cout << std::endl << "All task finished!" << std::endl;
                 break;
             }
+    }
+
+    for (int a = 0; a < num_of_agents; a++) {
+        std::cout << paths[a] << std::endl;
     }
 
     cout << std::endl << "Done!" << std::endl;
