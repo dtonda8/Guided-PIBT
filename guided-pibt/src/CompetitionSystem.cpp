@@ -37,7 +37,7 @@ list<Task> BaseSystem::move(vector<Action>& actions){
             task.t_completed = timestep;
             finished_tasks_this_timestep.push_back(task);
             events[k].push_back(make_tuple(task.task_id, timestep,"finished"));
-            log_event_finished(k, task.task_id, timestep);
+            // log_event_finished(k, task.task_id, timestep);
         }
         paths[k].push_back(curr_states[k]);
         actual_movements[k].push_back(actions[k]);
@@ -204,7 +204,7 @@ void BaseSystem::simulate(int simulation_time){
             auto diff = end-start;
             planner_times.push_back(std::chrono::duration<double>(diff).count());
         }
-        cout <<"---timestep-task-finished,"<< new_finished_tasks.size() << std::endl;
+        // cout <<"---timestep-task-finished,"<< new_finished_tasks.size() << std::endl;
 
         // update tasks
         for (auto task : new_finished_tasks) {
@@ -214,7 +214,7 @@ void BaseSystem::simulate(int simulation_time){
             num_of_tasks++;
             num_of_task_finish++;
         }
-        cout  <<"---total-task-finished,"<< num_of_tasks << std::endl;
+        // cout  <<"---total-task-finished,"<< num_of_tasks << std::endl;
 
         update_tasks();
 
@@ -231,12 +231,12 @@ void BaseSystem::simulate(int simulation_time){
             }
         if (complete_all)
             {
-                cout << std::endl << "All task finished!" << std::endl;
+                // cout << std::endl << "All task finished!" << std::endl;
                 break;
             }
     }
 
-    cout << std::endl << "Done!" << std::endl;
+    // cout << std::endl << "Done!" << std::endl;
 }
 
 
@@ -278,11 +278,11 @@ void BaseSystem::initialize() {
         }
 }
 
-std::vector<Path> BaseSystem::getPaths() {
+const std::vector<Path>& BaseSystem::getPaths() const {
     return paths;
 }
 
-vector<int> BaseSystem::getSolutionCosts() {
+const vector<int>& BaseSystem::getSolutionCosts() const {
     return solution_costs;
 }
 
@@ -592,7 +592,7 @@ void FixedAssignSystem::update_tasks(){
             assigned_tasks[k].push_back(task);
             events[k].push_back(make_tuple(task.task_id,timestep,"assigned"));
             all_tasks.push_back(task);
-            log_event_assigned(k, task.task_id, timestep);
+            // log_event_assigned(k, task.task_id, timestep);
         }
     }
 }

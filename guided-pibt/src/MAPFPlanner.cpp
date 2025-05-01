@@ -64,7 +64,7 @@ void MAPFPlanner::initialize(int preprocess_time_limit) {
 // return next states for all agents
 void MAPFPlanner::plan(int time_limit,vector<Action> & actions) 
 {
-    cout<<"---timestep,"<< env->curr_timestep<<endl;
+    // cout<<"---timestep,"<< env->curr_timestep<<endl;
     prev_decision.clear();
     prev_decision.resize(env->map.size(), -1);
     occupied.clear();

@@ -32,9 +32,9 @@ public:
 
     std::string action2symbol(int action) const;
 
-    std::vector<Path> getPaths();
+    const vector<Path>& getPaths() const;
     
-    vector<int> getSolutionCosts();
+    const vector<int>& getSolutionCosts() const;
 
     void savePaths(const string &fileName, int option) const; //option = 0: save actual movement, option = 1: save planner movement
     //void saveSimulationIssues(const string &fileName) const;
