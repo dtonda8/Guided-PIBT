@@ -23,12 +23,12 @@ Grid::Grid(string fname){
         boost::tokenizer<boost::char_separator<char>>::iterator beg;
         beg = tok.begin();
         beg++;
-        rows = atoi((*beg).c_str()); // read number of rows
+        cols = atoi((*beg).c_str()); // read number of cols
         getline(myfile, line);
         boost::tokenizer<boost::char_separator<char>> tok2(line, sep);
         beg = tok2.begin();
         beg++;
-        cols = atoi((*beg).c_str()); // read number of cols
+        rows = atoi((*beg).c_str()); // read number of rows
         getline(myfile, line); // skip "map"
 
     } else {
