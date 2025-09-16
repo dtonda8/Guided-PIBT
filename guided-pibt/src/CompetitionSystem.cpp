@@ -170,7 +170,6 @@ void BaseSystem::simulate(int simulation_time){
     int num_of_tasks = 0;
 
     for (; timestep < simulation_time && ! this->has_timeout; ) {
-
         // cout << "----------------------------" << std::endl;
         // cout << "Timestep " << timestep << std::endl;
 
@@ -234,6 +233,7 @@ void BaseSystem::simulate(int simulation_time){
                 // cout << std::endl << "All task finished!" << std::endl;
                 break;
             }
+        stopping_criteria.check_and_throw();
     }
 
     // cout << std::endl << "Done!" << std::endl;

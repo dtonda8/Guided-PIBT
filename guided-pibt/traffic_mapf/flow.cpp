@@ -378,7 +378,7 @@ int select_method(TrajLNS& lns){
 
 
 //neighborhood search
-void destory_improve(TrajLNS& lns, std::vector<int>& traffic,std::unordered_set<int>& updated, int max_ite, double time_limit){
+void destory_improve(TrajLNS& lns, std::vector<int>& traffic,std::unordered_set<int>& updated, int max_ite, double time_limit, const StoppingCriteria& stopping_criteria){
     int ite = 0;
     TimePoint start_time = std::chrono::steady_clock::now();
     bool stop = false;
@@ -391,6 +391,7 @@ void destory_improve(TrajLNS& lns, std::vector<int>& traffic,std::unordered_set<
     
     int old_op_flow, old_vertex_flow, old_soc, method;
     while(!terminate(lns, max_ite,time_limit,ite,start_time,stop)){
+        stopping_criteria.check_and_throw();
         if (lns.t_ms !=0 && std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - lns.start_time).count() >lns.t_ms){
             break;
         }

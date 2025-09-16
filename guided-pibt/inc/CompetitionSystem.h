@@ -8,13 +8,14 @@
 #include "Logger.h"
 #include <pthread.h>
 #include <future>
+#include "fypshared/stopping_criteria.hpp"
 
 class BaseSystem{
 public:
 
 
-	BaseSystem(Grid &grid, MAPFPlanner* planner, ActionModelWithRotate* model):
-        map(grid), planner(planner), env(planner->env), model(model)
+	BaseSystem(Grid &grid, MAPFPlanner* planner, ActionModelWithRotate* model, const StoppingCriteria& stopping_criteria):
+        map(grid), planner(planner), env(planner->env), model(model), stopping_criteria(stopping_criteria)
     {}
 
 	virtual ~BaseSystem(){
@@ -98,6 +99,8 @@ protected:
     list<double> planner_times; 
     bool fast_mover_feasible = true;
 
+    const StoppingCriteria& stopping_criteria;
+
 
 	void initialize();
     bool planner_initialize();
@@ -120,14 +123,18 @@ class FixedAssignSystem : public BaseSystem
 
 {
 public:
-	FixedAssignSystem(Grid &grid, string agent_task_filename, MAPFPlanner* planner, ActionModelWithRotate *model):
-        BaseSystem(grid, planner, model)
+	FixedAssignSystem(Grid &grid, string agent_task_filename, MAPFPlanner* planner, 
+        ActionModelWithRotate *model, 
+        const StoppingCriteria& stopping_criteria = InfiniteStoppingCriteria()):
+        BaseSystem(grid, planner, model, stopping_criteria)
     {
         load_agent_tasks(agent_task_filename);
     };
 
-	FixedAssignSystem(Grid &grid, MAPFPlanner* planner, std::vector<int>& start_locs, std::vector<vector<int>>& tasks, ActionModelWithRotate* model):
-        BaseSystem(grid, planner, model)
+	FixedAssignSystem(Grid &grid, MAPFPlanner* planner, std::vector<int>& start_locs, 
+        std::vector<vector<int>>& tasks, ActionModelWithRotate* model, 
+        const StoppingCriteria& stopping_criteria = InfiniteStoppingCriteria()):
+        BaseSystem(grid, planner, model, stopping_criteria)
     {
         if (start_locs.size() != tasks.size()){
             std::cerr << "agent num does not match the task assignment" << std::endl;
@@ -164,8 +171,10 @@ private:
 class TaskAssignSystem : public BaseSystem
 {
 public:
-	TaskAssignSystem(Grid &grid, MAPFPlanner* planner, std::vector<int>& start_locs, std::vector<int>& tasks, ActionModelWithRotate* model):
-        BaseSystem(grid, planner, model)
+	TaskAssignSystem(Grid &grid, MAPFPlanner* planner, std::vector<int>& start_locs, 
+        std::vector<int>& tasks, ActionModelWithRotate* model, 
+        const StoppingCriteria& stopping_criteria = InfiniteStoppingCriteria()):
+        BaseSystem(grid, planner, model, stopping_criteria)
     {
         int task_id = 0;
         for (auto& task_location: tasks){
@@ -194,8 +203,10 @@ private:
 class InfAssignSystem : public BaseSystem
 {
 public:
-	InfAssignSystem(Grid &grid, MAPFPlanner* planner, std::vector<int>& start_locs, std::vector<int>& tasks, ActionModelWithRotate* model):
-        tasks(tasks), BaseSystem(grid, planner, model)
+	InfAssignSystem(Grid &grid, MAPFPlanner* planner, std::vector<int>& start_locs, 
+        std::vector<int>& tasks, ActionModelWithRotate* model, 
+        const StoppingCriteria& stopping_criteria = InfiniteStoppingCriteria()):
+        tasks(tasks), BaseSystem(grid, planner, model, stopping_criteria)
     {
 
         num_of_agents = start_locs.size();

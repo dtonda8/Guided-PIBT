@@ -5,6 +5,7 @@
 #include "search.hpp"
 #include "TrajLNS.h"
 #include "heuristics.hpp"
+#include "fypshared/stopping_criteria.hpp"
 
 #include <random>
 #include <unordered_set>
@@ -49,7 +50,7 @@ int select_method(TrajLNS& lns);
 
 
 //neighborhood search
-void destory_improve(TrajLNS& lns, std::vector<int>& traffic,std::unordered_set<int>& updated, int max_ite, double time_limit);
+void destory_improve(TrajLNS& lns, std::vector<int>& traffic,std::unordered_set<int>& updated, int max_ite, double time_limit, const StoppingCriteria& stopping_criteria);
 
 }
 #endif
